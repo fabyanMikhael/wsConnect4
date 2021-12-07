@@ -199,9 +199,10 @@ exports.GameManager = class GameManager{
         room.RegisterUser(room.p1);
         callback();
 
+        let player = room.p1;
         let disconnect = () => {
             delete this.games[room.room_id];
-            room.p1.socket = null;
+            player.socket = null;
             room.EndGame(-2);
         };
 
@@ -228,9 +229,10 @@ exports.GameManager = class GameManager{
         room.RegisterUser(room.p2);
         callback();
 
+        let player = room.p2;
         let disconnect = () => {
             delete this.games[room.room_id];
-            room.p2.socket = null;
+            player.socket = null;
             room.EndGame(-2);
         };
         
