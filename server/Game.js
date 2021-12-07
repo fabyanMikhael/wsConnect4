@@ -15,11 +15,16 @@ class Game{
         this.EmitState();
     }
 
-    RegisterUser(user, side){
-        let player = side == 1? this.p1 : this.p2;
-        user.socket.on(WS_Server.TryMove, (row,column) => {
-            this.board[row][column] = player.emoji;
-            this.EmitState();
+    RegisterUser(player){
+        player.socket.on(WS_Server.TryMove, column => {
+            if (!(column >= 0 && column <= 6)) return;
+            this.board.forEach(row => {
+                if (row[column] == 0){
+                    row[column] = player.emoji;
+                    this.EmitState();
+                    return;
+                }
+            });
         });
     }
 
@@ -61,6 +66,14 @@ class Game{
         this.EmitState();
     }
 
+    CheckWin(){
+
+    }
+
+    _CheckBoard_(player){
+        
+    }
+
 }
 
 exports.GameManager = class GameManager{
@@ -73,18 +86,25 @@ exports.GameManager = class GameManager{
     }
 
     CreateRoom(socket, name, callback = () => {}){
+        if (name.length > 20) return;
         let room = new Game(socket, name, makeid(10));
         this.games[room.room_id] = room;
 
-        room.RegisterUser(room.p1, 1);
+        room.RegisterUser(room.p1);
         callback();
-        socket.on("disconnect", () => {
-        delete this.games[room.room_id];
-        room.EndGame(-1);
-        });
+
+        let disconnect = () => {
+            delete this.games[room.room_id];
+            room.EndGame(-1);
+        };
+
+        socket.on("disconnect", disconnect);
+        socket.on(WS_Server.LeaveRoom, disconnect);
+        room.EmitState();
     }
 
     JoinRoom(room_id, socket, name, callback = () => {}){
+        if (name.length > 20) return;
         if (!room_id in this.games)
             return;
 
@@ -97,13 +117,16 @@ exports.GameManager = class GameManager{
             return;
 
         room.p2 = {socket: socket, emoji: room.p2.emoji, name: name};
-        room.RegisterUser(room.p2, 2);
+        room.RegisterUser(room.p2);
         callback();
-        socket.on("disconnect", () => {
-        delete this.games[room.room_id];
-        room.EndGame(-1);
-        });
 
+        let disconnect = () => {
+            delete this.games[room.room_id];
+            room.EndGame(-1);
+        };
+        
+        socket.on("disconnect", disconnect);
+        socket.on(WS_Server.LeaveRoom, disconnect);
         room.EmitState();
     }
 }

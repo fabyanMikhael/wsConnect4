@@ -3,7 +3,8 @@ exports.WS_Server = {
     JoinRoom: "JoinRoom", // (int room_id, string name, callback(gamestate) on_success)
 
     //when in a game...
-    TryMove: "TryMove", // (int row, int column)
+    TryMove: "TryMove", // (int column)
+    LeaveRoom: "LeaveRoom", // ()
 }
 
 exports.WS_Client = {
