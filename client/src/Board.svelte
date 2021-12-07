@@ -19,10 +19,16 @@
         <div class="topper">
           <h2 class="back" on:click={leave}><i class="fas fa-arrow-left" /></h2>
           <h2 class="id">room: <b>{$game.room_id}</b></h2>
-          <h2 class="back"><i class="fas fa-trophy" /></h2>
+          <h2 class="back"><i class="fas fa-eye" /></h2>
         </div>
       </div>
       <div class="board">
+        {#if $game.state !== "ongoing"}
+          <div in:fly={{ y: 140, duration: 800 }} class="overlay">
+            <h1>You Win</h1>
+          </div>
+        {/if}
+
         {#each $game.board as row}
           {#each row as emoji, column}
             <Cell {emoji} {column} />
@@ -38,7 +44,7 @@
           {#if !$game.turn}
             <h2 in:fly={{ y: 50, duration: 800 }}>Opponent's Turn</h2>
           {:else}
-            <h2>&nbsp;;</h2>
+            <h2>&nbsp;</h2>
           {/if}
         </div>
         <div class="person">
@@ -115,7 +121,7 @@
     align-items: center;
     justify-content: space-between;
     padding-top: 0.5rem;
-    margin: 2px;
+    /* margin: 2px; */
   }
 
   .topper {
@@ -127,7 +133,6 @@
 
   .name {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     user-select: none;
   }
@@ -159,5 +164,16 @@
   .person h2 {
     font-size: 0.8rem;
     color: rgb(105, 105, 105);
+  }
+
+  .overlay {
+    position: absolute;
+    z-index: 10;
+    right: 25%;
+    bottom: 55%;
+    width: 50%;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0px 5px 10px 2px rgb(220, 220, 220);
+    border-radius: 5px;
   }
 </style>
