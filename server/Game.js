@@ -78,7 +78,7 @@ class Game{
 
     CheckWin(player, row, column){
         let player_index = player == this.p1 ? 1 : 2;
-        for (let x = 0; x < 7; i++){
+        for (let x = 0; x < 7; x++){
             let sum = 0;
             for (let i = 0; i < 4; i++){
                 let cell = this.GetCell(row, x+i)
@@ -90,7 +90,7 @@ class Game{
                 return true;
             }
         }
-        for (let x = 0; x < 6; i++){
+        for (let x = 0; x < 6; x++){
             let sum = 0;
             for (let i = 0; i < 4; i++){
                 let cell = this.GetCell(x+i, column);
@@ -102,6 +102,43 @@ class Game{
                 return true;
             }
         } 
+
+        let offsets = [[-3,-3], [-2,-2], [-1,-1], [0,0], [1,1], [2,2], [3,3]];
+        let offsets_2 = [[0,0], [1,1], [2,2], [3,3], [4,4]];
+        for (const {a,b} of offsets){
+            let x = row + a;
+            let y = column + b;
+            let sum = 0;
+            for (const {i,j} of offsets_2){
+                let cell = this.GetCell(x+i, y+j);
+                if (cell == 0 || cell != player_index) break;
+                sum += 1;
+            }
+            if (sum == 4){
+                this.EndGame(player_index);
+                return true;
+            }
+        }
+
+
+        let offsets = [[3,-3], [2,-2], [1,-1], [0,0], [-1,1], [-2,2], [-3,3]];
+        let offsets_2 = [[0,0], [-1,1], [-2,2], [-3,3], [-4,4]];
+        for (const {a,b} of offsets){
+            let x = row + a;
+            let y = column + b;
+            let sum = 0;
+            for (const {i,j} of offsets_2){
+                let cell = this.GetCell(x+i, y+j);
+                if (cell == 0 || cell != player_index) break;
+                sum += 1;
+            }
+            if (sum == 4){
+                this.EndGame(player_index);
+                return true;
+            }
+        }
+
+        
         return false;
     }
 
