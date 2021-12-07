@@ -12,12 +12,13 @@ const io = new Server(server, {
 
 const cors = require("cors");
 
-app.use(cors());+
+app.use(cors());
 
 
-
+const { GameManager } = require("./Game");
+let GM = new GameManager();
 io.on('connection', (socket) => {
-  socket
+    GM.Setup(socket);
 });
 
 server.listen(8080, '127.0.0.1', () => {
