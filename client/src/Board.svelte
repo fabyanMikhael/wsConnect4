@@ -56,21 +56,23 @@
           <div in:fly={{ y: 140, duration: 800 }} class="overlay">
             <h1>{get_state()}</h1>
 
-            <!-- {#if $game.state !== "waiting"} -->
-            <h2 class="history">
-              <div class={`circle cc e${$game.other.emoji}`} />
-              <div>
-                {$game.other.wins} <i class="fas fa-trophy gold" />
-                {$game.self.wins}
-              </div>
-              <div class={`circle cc e${$game.self.emoji}`} />
-            </h2>
+            {#if $game.state !== "waiting"}
+              <h2 class="history">
+                <div class={`circle cc e${$game.other.emoji}`} />
+                <div>
+                  {$game.other.wins} <i class="fas fa-trophy gold" />
+                  {$game.self.wins}
+                </div>
+                <div class={`circle cc e${$game.self.emoji}`} />
+              </h2>
 
-            <div class="actions">
-              <h2 on:click={leave}>leave</h2>
-              <h2 on:click={rematch}>rematch</h2>
-            </div>
-            <!-- {/if} -->
+              <div class="actions">
+                <h2 on:click={leave}>leave</h2>
+                {#if $game.state !== "forfeit"}
+                  <h2 on:click={rematch}>rematch</h2>
+                {/if}
+              </div>
+            {/if}
           </div>
         {/if}
 
@@ -198,6 +200,7 @@
   .name p {
     display: flex;
     align-items: center;
+    user-select: none;
   }
 
   .emoji {
@@ -270,5 +273,14 @@
   .actions h2 {
     margin: 0;
     font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  .actions :hover {
+    color: rgb(149, 149, 149);
+  }
+
+  .actions :active {
+    color: rgb(69, 69, 69);
   }
 </style>
