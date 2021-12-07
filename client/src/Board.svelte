@@ -8,6 +8,21 @@
     $Socket.emit(WS_Server.LeaveRoom);
     started.set(false);
   }
+
+  function get_state() {
+    switch ($game.state) {
+      case "tie":
+        return "Draw";
+      case "forfeit":
+        return "Opponent Left The Match";
+      case "waiting":
+        return "Waiting For Opponent";
+      default:
+        return `You ${$game.state
+          .charAt(0)
+          .toUpperCase()}${$game.state.slice()}`;
+    }
+  }
 </script>
 
 <!-- html -->
@@ -25,7 +40,7 @@
       <div class="board">
         {#if $game.state !== "ongoing"}
           <div in:fly={{ y: 140, duration: 800 }} class="overlay">
-            <h1>You Win</h1>
+            <h1>{get_state()}</h1>
           </div>
         {/if}
 
