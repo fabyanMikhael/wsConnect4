@@ -1,4 +1,5 @@
 exports.WS_Server = {
+    //main menu
     CreateRoom: "CreateRoom", // (string name, callback(gamestate) on_success)
     JoinRoom: "JoinRoom", // (int room_id, string name, callback(gamestate) on_success)
 
@@ -8,5 +9,9 @@ exports.WS_Server = {
 }
 
 exports.WS_Client = {
-    GameState: "GameState" // (GameState state)
+    //when in a game
+    GameState: "GameState", // (GameState state)
+
+    //info
+    PlayerCount: "PlayerCount" // (int count)
 }
