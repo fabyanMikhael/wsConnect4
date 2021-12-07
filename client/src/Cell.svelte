@@ -17,7 +17,7 @@
 <div
   on:click={click}
   class={`cell ${highlight ? "highlight" : "reg"}`}
-  style={`cursor: ${emoji.length == 0 ? "pointer" : "default"}`}
+  style={`cursor: ${emoji == 0 ? "pointer" : "default"}`}
 >
   {#if emoji}
     <div

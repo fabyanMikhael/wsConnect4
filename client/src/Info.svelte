@@ -1,4 +1,5 @@
 <script>
+  import { fly } from "svelte/transition";
   import { Socket } from "./stores";
   import { WS_Server } from "../../wsEnums";
 
@@ -17,7 +18,7 @@
 </script>
 
 <!-- html -->
-<div class="outter">
+<div in:fly={{ y: -140, duration: 800 }} class="outter">
   <div class="inner">
     <div class="everything">
       <div>
@@ -25,11 +26,11 @@
       </div>
       <div class="form">
         <div class="sec">
-          <input maxlength="20" placeholder="name..." bind:value={name} />
+          <input maxlength="10" placeholder="name..." bind:value={name} />
         </div>
 
         <div class="sec">
-          <input maxlength="10" placeholder="room..." bind:value={room} />
+          <input maxlength="5" placeholder="room..." bind:value={room} />
         </div>
 
         <button class="btn" on:click={start}

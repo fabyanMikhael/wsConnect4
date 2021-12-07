@@ -1,16 +1,17 @@
 <script>
   import { fly } from "svelte/transition";
   import { game, started, Socket } from "./stores";
+  import { WS_Server } from "../../wsEnums";
   import Cell from "./Cell.svelte";
 
   function leave() {
-    // doesnt actually leave
+    $Socket.emit(WS_Server.LeaveRoom);
     started.set(false);
   }
 </script>
 
 <!-- html -->
-<div transition:fly={{ y: 140, duration: 800 }} class="outter">
+<div in:fly={{ y: 140, duration: 800 }} class="outter">
   <div class="inner">
     <div class="everything">
       <div>
@@ -29,14 +30,27 @@
         {/each}
       </div>
       <div class="footer">
-        <div class="name">
-          <div class={`circle cc e${$game.other.emoji}`} />
-          <!-- <p class="emoji">{$game.other.emoji}</p> -->
-          <p>{$game.other.name || "invite a friend"}</p>
+        <div class="person">
+          <div class="name">
+            <div class={`circle cc e${$game.other.emoji}`} />
+            <p>{$game.other.name || "invite a friend"}</p>
+          </div>
+          {#if !$game.turn}
+            <h2 in:fly={{ y: 50, duration: 800 }}>Opponent's Turn</h2>
+          {:else}
+            <h2>&nbsp;;</h2>
+          {/if}
         </div>
-        <div class="name">
-          <p>{$game.self.name || ""} (<b>you</b>)</p>
-          <div class={`circle cc e${$game.self.emoji}`} />
+        <div class="person">
+          <div class="name">
+            <p>{$game.self.name || ""}</p>
+            <div class={`circle cc e${$game.self.emoji}`} />
+          </div>
+          {#if $game.turn}
+            <h2 in:fly={{ y: 50, duration: 800 }}>Your Turn</h2>
+          {:else}
+            <h2>&nbsp;</h2>
+          {/if}
         </div>
       </div>
     </div>
@@ -118,6 +132,11 @@
     user-select: none;
   }
 
+  .name p {
+    display: flex;
+    align-items: center;
+  }
+
   .emoji {
     font-size: 1.5rem;
     user-select: none;
@@ -130,5 +149,15 @@
   .cc {
     width: 1.5rem;
     height: 1.5rem;
+  }
+
+  .person {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .person h2 {
+    font-size: 0.8rem;
+    color: rgb(105, 105, 105);
   }
 </style>
