@@ -1,15 +1,15 @@
 <script>
+  import { fly } from "svelte/transition";
   import { Socket } from "./stores";
   import { WS_Server } from "../../wsEnums";
 
   export let emoji;
   export let highlight;
   export let column;
-  export let row;
 
   function click() {
     if (emoji == 0) {
-      $Socket.emit(WS_Server.TryMove, row, column);
+      $Socket.emit(WS_Server.TryMove, column);
     }
   }
 </script>
@@ -20,7 +20,10 @@
   style={`cursor: ${emoji.length == 0 ? "pointer" : "default"}`}
 >
   {#if emoji}
-    <div class={`circle e${emoji}`}>&nbsp;</div>
+    <div
+      transition:fly={{ y: 140, duration: 800 }}
+      class={`circle e${emoji}`}
+    />
   {/if}
 </div>
 
@@ -37,7 +40,6 @@
     transition: all 100ms;
     user-select: none;
   }
-
 
   .cell:hover {
     background-color: rgb(205, 205, 205);

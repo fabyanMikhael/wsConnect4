@@ -22,9 +22,9 @@
         </div>
       </div>
       <div class="board">
-        {#each $game.board as row, y}
-          {#each row as cell, x}
-            <Cell emoji={cell} row={y} column={x} />
+        {#each $game.board as row}
+          {#each row as emoji, column}
+            <Cell {emoji} {column} />
           {/each}
         {/each}
       </div>
@@ -100,6 +100,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-top: 0.5rem;
     margin: 2px;
   }
 
