@@ -3,7 +3,7 @@ const { WS_Client, WinCondition, WS_Server } =  require("../wsEnums");
 class Game{
     constructor(player1, name1, room_id){
         this.p1 = {socket: player1, emoji: '😇', name: name1};
-        this.p2 = {socket: null, emoji: '🤓', name: null};
+        this.p2 = {socket: null, emoji: '😈', name: null};
         this.board = [];
         this.room_id = room_id;
         this.turn = this.p2;
@@ -26,7 +26,9 @@ class Game{
     EmitState(){
         console.log(this);
         this.p1.socket.emit(WS_Client.GameState, this.State(this.p1));
-        if(this.p2.socket == null) return;
+        if(this.p2.socket === null)
+            return;
+
         this.p2.socket.emit(WS_Client.GameState, this.State(this.p2));
     }
 
@@ -66,12 +68,12 @@ exports.GameManager = class GameManager{
         this.games = {};
     }
     Setup(socket){
-        socket.on(WS_Server.CreateRoom,   (name, callback) => this.CreateRoom(socket, name, callback));
+        socket.on(WS_Server.CreateRoom, (name, callback) => this.CreateRoom(socket, name, callback));
         socket.on(WS_Server.JoinRoom, (room_id, name, callback) => this.JoinRoom(room_id, socket, name, callback));
     }
 
     CreateRoom(socket, name, callback = () => {}){
-        let room = new Game(socket, name, makeid(23));
+        let room = new Game(socket, name, makeid(10));
         this.games[room.room_id] = room;
 
         room.RegisterUser(room.p1, 1);
@@ -83,20 +85,26 @@ exports.GameManager = class GameManager{
     }
 
     JoinRoom(room_id, socket, name, callback = () => {}){
+        if (!room_id in this.games)
+            return;
 
-        if (!room_id in this.games) return;
         let room = this.games[room_id];
-        if (room == null) return;
-        if (room.p2 != null) return;
 
-        room.p2 = {socket: socket, emoji: '🤓', name: name};
+        if (room == null) 
+            return;
 
+        if (room.p2.socket != null)
+            return;
+
+        room.p2 = {socket: socket, emoji: room.p2.emoji, name: name};
         room.RegisterUser(room.p2, 2);
         callback(room.State(room.p2));
         socket.on("disconnect", () => {
         delete this.games[room.room_id];
         room.EndGame(-1);
         });
+
+        room.EmitState();
     }
 }
 

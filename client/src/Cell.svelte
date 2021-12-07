@@ -1,11 +1,16 @@
 <script>
+  import { Socket } from "./stores";
+  import { WS_Server } from "../../wsEnums";
+
   export let emoji;
   export let highlight;
   export let column;
+  export let row;
 
   function click() {
-    if (!emoji) {
-      // do stuff
+    console.log(emoji.length);
+    if (emoji.length == 0) {
+      $Socket.emit(WS_Server.TryMove, row, column);
     }
   }
 </script>
@@ -13,7 +18,7 @@
 <div
   on:click={click}
   class={`cell ${highlight ? "highlight" : "reg"}`}
-  style={`curson: ${emoji ? "default" : "pointer"}`}
+  style={`cursor: ${emoji.length == 0 ? "pointer" : "default"}`}
 >
   {emoji}
 </div>

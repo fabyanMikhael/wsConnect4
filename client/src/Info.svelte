@@ -1,22 +1,17 @@
 <script>
-  import { fly } from "svelte/transition";
-  import { Socket, started } from "./stores";
+  import { Socket } from "./stores";
+  import { WS_Server } from "../../wsEnums";
 
   let name, room;
-  $: new_game = !(room && room.length > 0);
+  $: create_room = !(room && room.length > 0);
 
   function start() {
     if (name) {
-      $Socket.on("GameState", (game_state) => console.log(game_state));
-
-      if (new_game) {
-        $Socket.emit("CreateRoom", name);
+      if (create_room) {
+        $Socket.emit(WS_Server.CreateRoom, name);
       } else {
-        $Socket.emit("JoinRoom", room, name);
+        $Socket.emit(WS_Server.JoinRoom, room, name);
       }
-      //   $Socket.on("connect", () => alert("connected!"));
-
-      started.set(true);
     }
   }
 </script>
@@ -30,15 +25,15 @@
       </div>
       <div class="form">
         <div class="sec">
-          <input maxlength="22" placeholder="name..." bind:value={name} />
+          <input maxlength="20" placeholder="name..." bind:value={name} />
         </div>
 
         <div class="sec">
-          <input maxlength="22" placeholder="room..." bind:value={room} />
+          <input maxlength="10" placeholder="room..." bind:value={room} />
         </div>
 
         <button class="btn" on:click={start}
-          >{new_game ? "New Game" : "Join"}</button
+          >{create_room ? "Create" : "Join"} Room</button
         >
       </div>
     </div>

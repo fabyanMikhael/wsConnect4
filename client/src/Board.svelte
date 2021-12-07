@@ -1,29 +1,40 @@
 <script>
   import { fly } from "svelte/transition";
-  import { game } from "./stores";
+  import { game, started, Socket } from "./stores";
   import Cell from "./Cell.svelte";
+
+  function leave() {
+    // doesnt actually leave
+    started.set(false);
+  }
 </script>
 
 <!-- html -->
-<div transition:fly={{ y: 100, duration: 800 }} class="outter">
+<div transition:fly={{ y: 140, duration: 800 }} class="outter">
   <div class="inner">
     <div class="everything">
       <div>
         <h1 class="title">Connect 4</h1>
+        <div class="topper">
+          <h2 class="back" on:click={leave}><i class="fas fa-arrow-left" /></h2>
+          <h2 class="id">room: <b>{$game.room_id}</b></h2>
+          <h2 class="id" />
+        </div>
       </div>
       <div class="board">
-        {#each Array(42) as _, i}
-          <Cell emoji="😇" column={i % 7} />
+        {#each $game.board as row, y}
+          {#each row as cell, x}
+            <Cell emoji={cell} row={y} column={x} />
+          {/each}
         {/each}
       </div>
       <div class="footer">
         <div class="name">
           <p class="emoji">{$game.other.emoji}</p>
-          <p>{$game.other.name}</p>
+          <p>{$game.other.name || "invite a friend"}</p>
         </div>
-
         <div class="name">
-          <p>{$game.self.name} (<b>you</b>)</p>
+          <p>{$game.self.name || ""} (<b>you</b>)</p>
           <p class="emoji">{$game.self.emoji}</p>
         </div>
       </div>
@@ -33,8 +44,33 @@
 
 <style>
   .title {
-    margin-bottom: 0.3rem;
+    margin: 0;
     user-select: none;
+  }
+
+  .id {
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    color: rgb(173, 173, 173);
+  }
+
+  .back {
+    margin-bottom: 0.8rem;
+    font-size: 1.2rem;
+    transition: all 100ms;
+    cursor: pointer;
+  }
+
+  .back:hover {
+    color: rgb(149, 149, 149);
+  }
+
+  .back:active {
+    color: rgb(81, 81, 81);
+  }
+
+  .id b {
+    color: rgb(108, 108, 108);
   }
 
   .outter {
@@ -61,6 +97,14 @@
 
   .footer {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 2px;
+  }
+
+  .topper {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
     margin: 2px;
   }
