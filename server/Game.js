@@ -26,6 +26,7 @@ class Game{
                 if (this.board[row][column] == 0){
                     this.board[row][column] = player.emoji;
                     this.turn = player == this.p1 ? this.p2 : this.p1;
+                    if (this.CheckWin(player, row, column)) return;
                     this.EmitState();
                     return;
                 }
@@ -81,12 +82,12 @@ class Game{
             let sum = 0;
             for (let i = 0; i < 4; i++){
                 let cell = this.GetCell(row, x+i)
-                if (cell == 0 || cell != player_index) break;
+                if (cell != player_index) break;
                 sum += 1;
             }
             if (sum == 4){
                 this.EndGame(player_index);
-                return;
+                return true;
             }
         }
         for (let x = 0; x < 6; i++){
@@ -98,9 +99,10 @@ class Game{
             }
             if (sum == 4){
                 this.EndGame(player_index);
-                return;
+                return true;
             }
         } 
+        return false;
     }
 
     GetCell(row,column){
