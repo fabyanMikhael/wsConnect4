@@ -8,8 +8,7 @@
   export let row;
 
   function click() {
-    console.log(emoji.length);
-    if (emoji.length == 0) {
+    if (emoji == 0) {
       $Socket.emit(WS_Server.TryMove, row, column);
     }
   }
@@ -20,7 +19,9 @@
   class={`cell ${highlight ? "highlight" : "reg"}`}
   style={`cursor: ${emoji.length == 0 ? "pointer" : "default"}`}
 >
-  {emoji}
+  {#if emoji}
+    <div class={`circle e${emoji}`}>&nbsp;</div>
+  {/if}
 </div>
 
 <style>
@@ -36,6 +37,7 @@
     transition: all 100ms;
     user-select: none;
   }
+
 
   .cell:hover {
     background-color: rgb(205, 205, 205);

@@ -60,3 +60,19 @@ button:not(:disabled):active {
 button:focus {
 	border-color: #666;
 }
+
+
+.circle {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 100%;
+    box-shadow: 0px 0px 10px 2px rgb(220, 220, 220);
+  }
+
+  .e1 {
+    background-color: #458cff;
+  }
+
+  .e2 {
+    background-color: #ff4545;
+  }

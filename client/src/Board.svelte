@@ -18,7 +18,7 @@
         <div class="topper">
           <h2 class="back" on:click={leave}><i class="fas fa-arrow-left" /></h2>
           <h2 class="id">room: <b>{$game.room_id}</b></h2>
-          <h2 class="id" />
+          <h2 class="back"><i class="fas fa-trophy" /></h2>
         </div>
       </div>
       <div class="board">
@@ -30,12 +30,13 @@
       </div>
       <div class="footer">
         <div class="name">
-          <p class="emoji">{$game.other.emoji}</p>
+          <div class={`circle cc e${$game.other.emoji}`} />
+          <!-- <p class="emoji">{$game.other.emoji}</p> -->
           <p>{$game.other.name || "invite a friend"}</p>
         </div>
         <div class="name">
           <p>{$game.self.name || ""} (<b>you</b>)</p>
-          <p class="emoji">{$game.self.emoji}</p>
+          <div class={`circle cc e${$game.self.emoji}`} />
         </div>
       </div>
     </div>
@@ -123,5 +124,10 @@
 
   .name * {
     margin: 0rem 0.2rem;
+  }
+
+  .cc {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 </style>

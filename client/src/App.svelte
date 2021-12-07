@@ -6,7 +6,6 @@
   import { WS_Client } from "../../wsEnums";
 
   $Socket.on(WS_Client.GameState, (gs) => {
-    console.log(gs);
     started.set(true);
     game.set(gs);
   });
