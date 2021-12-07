@@ -18,9 +18,9 @@ class Game{
     RegisterUser(player){
         player.socket.on(WS_Server.TryMove, column => {
             if (!(column >= 0 && column <= 6)) return;
-            for (const row of this.board){
-                if (row[column] == 0){
-                    row[column] = player.emoji;
+            for (let row = 5; row >= 0; row--){
+                if (this.board[row][column] == 0){
+                    this.board[row][column] = player.emoji;
                     this.EmitState();
                     return;
                 }
