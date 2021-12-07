@@ -31,11 +31,10 @@ class Game{
 
     EmitState(){
         console.log(this);
-        this.p1.socket.emit(WS_Client.GameState, this.State(this.p1));
-        if(this.p2.socket === null)
-            return;
-
-        this.p2.socket.emit(WS_Client.GameState, this.State(this.p2));
+        if(this.p1.socket !== null)
+            this.p1.socket.emit(WS_Client.GameState, this.State(this.p1));
+        if(this.p2.socket !== null)
+            this.p2.socket.emit(WS_Client.GameState, this.State(this.p2));
     }
 
     State(player){
