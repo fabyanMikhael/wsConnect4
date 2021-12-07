@@ -18,6 +18,7 @@ class Game{
     RegisterUser(player){
         player.socket.on(WS_Server.TryMove, column => {
             if (!(column >= 0 && column <= 6)) return;
+            if (this.over) return;
             for (let row = 5; row >= 0; row--){
                 if (this.board[row][column] == 0){
                     this.board[row][column] = player.emoji;
@@ -87,7 +88,11 @@ exports.GameManager = class GameManager{
 
     CreateRoom(socket, name, callback = () => {}){
         if (name.length > 20) return;
-        let room = new Game(socket, name, makeid(10));
+        let code = makeid(5);
+        while (this.games[code] != null){
+            code = makeid(5);
+        }
+        let room = new Game(socket, name, code);
         this.games[room.room_id] = room;
 
         room.RegisterUser(room.p1);
@@ -95,6 +100,7 @@ exports.GameManager = class GameManager{
 
         let disconnect = () => {
             delete this.games[room.room_id];
+            room.p1.socket = null
             room.EndGame(-1);
         };
 
@@ -122,6 +128,7 @@ exports.GameManager = class GameManager{
 
         let disconnect = () => {
             delete this.games[room.room_id];
+            room.p2.socket = null;
             room.EndGame(-1);
         };
         
@@ -133,7 +140,7 @@ exports.GameManager = class GameManager{
 
 function makeid(length) {
     var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     var charactersLength = characters.length;
     for ( var i = 0; i < length; i++ ) {
       result += characters.charAt(Math.floor(Math.random() * 
