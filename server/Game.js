@@ -25,6 +25,7 @@ class Game{
             for (let row = 5; row >= 0; row--){
                 if (this.board[row][column] == 0){
                     this.board[row][column] = player.emoji;
+                    this.turn = player == this.p1 ? this.p2 : this.p1;
                     this.EmitState();
                     return;
                 }
@@ -124,7 +125,8 @@ exports.GameManager = class GameManager{
         if (room.p2.socket != null)
             return;
 
-        room.p2 = {socket: socket, emoji: room.p2.emoji, name: name};
+        room.p2.socket = socket;
+        room.p2.name = name;
         room.RegisterUser(room.p2);
         callback();
 
