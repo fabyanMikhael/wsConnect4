@@ -56,10 +56,10 @@ class Game{
                 state = this.winner == player_index ? "won" : "lost";
             }
         }
-        
+        else if (this.p2.socket == null) state = "waiting";
         return {
-            self:  {name: player.name, emoji: player.emoji},
-            other: {name: other.name, emoji: other.emoji},
+            self:  {name: player.name, emoji: player.emoji, wins: player.socket.wins},
+            other: {name: other.name, emoji: other.emoji, wins: (other.socket == null ? 0 : other.socket.wins) },
             board: this.board,
             turn: player == this.turn,
             room_id: this.room_id,
@@ -70,19 +70,43 @@ class Game{
     EndGame(winner){
         this.over = true;
         this.winner = winner;
+        if(winner == 1) this.p1.socket.wins += 1;
+        if(winner == 2) this.p2.socket.wins += 1;
         this.EmitState();
     }
 
-    CheckWin(){
-
-    }
-
-    _CheckBoard_(player){
-        
+    CheckWin(player, row, column){
+        let player_index = player == this.p1 ? 1 : 2;
+        for (let x = 0; x < 7; i++){
+            let sum = 0;
+            for (let i = 0; i < 4; i++){
+                let cell = this.GetCell(row, x+i)
+                if (cell == 0 || cell != player_index) break;
+                sum += 1;
+            }
+            if (sum == 4){
+                this.EndGame(player_index);
+                return;
+            }
+        }
+        for (let x = 0; x < 6; i++){
+            let sum = 0;
+            for (let i = 0; i < 4; i++){
+                let cell = this.GetCell(x+i, column);
+                if (cell == 0 || cell != player_index) break;
+                sum += 1;
+            }
+            if (sum == 4){
+                this.EndGame(player_index);
+                return;
+            }
+        } 
     }
 
     GetCell(row,column){
-        
+        if (row < 0 || row > 5) return 0;
+        if (column < 0 || column > 6) return 0;
+        return this.board[row][column];
     }
 
 }
@@ -92,6 +116,7 @@ exports.GameManager = class GameManager{
         this.games = {};
     }
     Setup(socket){
+        socket.wins = 0;
         socket.on(WS_Server.CreateRoom, (name, callback) => this.CreateRoom(socket, name, callback));
         socket.on(WS_Server.JoinRoom, (room_id, name, callback) => this.JoinRoom(room_id, socket, name, callback));
     }
