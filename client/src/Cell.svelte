@@ -21,7 +21,7 @@
 >
   {#if emoji}
     <div
-      transition:fly={{ y: 140, duration: 800 }}
+      transition:fly={{ y: -140, duration: 800 }}
       class={`circle e${emoji}`}
     />
   {/if}
