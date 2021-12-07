@@ -12,11 +12,12 @@ const io = new Server(server, {
 
 const cors = require("cors");
 
-app.use(cors());
+app.use(cors());+
 
 
 
 io.on('connection', (socket) => {
+  socket
 });
 
 server.listen(8080, '127.0.0.1', () => {
