@@ -11,6 +11,7 @@ class Game{
         this.turn = this.p2;
         this.over = false;
         this.winner = -1;
+        this.moves = 0;
         for (let i = 0; i < 6; i++){
             this.board.push([0, 0, 0, 0, 0, 0, 0])
         }
@@ -25,6 +26,7 @@ class Game{
             for (let row = 5; row >= 0; row--){
                 if (this.board[row][column] == 0){
                     this.board[row][column] = player.emoji;
+                    this.moves += 1;
                     this.turn = player == this.p1 ? this.p2 : this.p1;
                     if (this.CheckWin(player, row, column)) return;
                     this.EmitState();
@@ -84,6 +86,7 @@ class Game{
         this.turn = this.turn;
         this.over = false;
         this.winner = -1;
+        this.moves = 0;
         this.EmitState();
     }
     
@@ -97,6 +100,10 @@ class Game{
     }
 
     CheckWin(player, row, column){
+        if (this.moves >= 42){
+            this.EndGame(-1);
+            return;
+        }
         let player_index = player == this.p1 ? 1 : 2;
         for (let x = 0; x < 7; x++){
             let sum = 0;
