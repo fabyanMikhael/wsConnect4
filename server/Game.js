@@ -1,4 +1,6 @@
 const { WS_Client, WinCondition, WS_Server } =  require("../wsEnums");
+const NAME_LENGTH = 10;
+const ROOM_ID_LENGTH = 5;
 
 class Game{
     constructor(player1, name1, room_id){
@@ -19,6 +21,7 @@ class Game{
         player.socket.on(WS_Server.TryMove, column => {
             if (!(column >= 0 && column <= 6)) return;
             if (this.over) return;
+            if (this.turn != player) return;
             for (let row = 5; row >= 0; row--){
                 if (this.board[row][column] == 0){
                     this.board[row][column] = player.emoji;
@@ -87,10 +90,10 @@ exports.GameManager = class GameManager{
     }
 
     CreateRoom(socket, name, callback = () => {}){
-        if (name.length > 20) return;
-        let code = makeid(5);
+        if (name.length > NAME_LENGTH) return;
+        let code = makeid(ROOM_ID_LENGTH);
         while (this.games[code] != null){
-            code = makeid(5);
+            code = makeid(ROOM_ID_LENGTH);
         }
         let room = new Game(socket, name, code);
         this.games[room.room_id] = room;
@@ -110,7 +113,7 @@ exports.GameManager = class GameManager{
     }
 
     JoinRoom(room_id, socket, name, callback = () => {}){
-        if (name.length > 20) return;
+        if (name.length > NAME_LENGTH) return;
         if (!room_id in this.games)
             return;
 
