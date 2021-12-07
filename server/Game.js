@@ -2,15 +2,15 @@ const { WS_Client, WinCondition, WS_Server } =  require("../wsEnums");
 
 class Game{
     constructor(player1, name1, room_id){
-        this.p1 = {socket: player1, emoji: '😇', name: name1};
-        this.p2 = {socket: null, emoji: '😈', name: null};
+        this.p1 = {socket: player1, emoji: 1, name: name1};
+        this.p2 = {socket: null, emoji: 2, name: null};
         this.board = [];
         this.room_id = room_id;
         this.turn = this.p2;
         this.over = false;
         this.winner = -1;
         for (let i = 0; i < 6; i++){
-            this.board.push(['', '', '', '', '', '', ''])
+            this.board.push([0, 0, 0, 0, 0, 0, 0])
         }
         this.EmitState();
     }
@@ -77,7 +77,7 @@ exports.GameManager = class GameManager{
         this.games[room.room_id] = room;
 
         room.RegisterUser(room.p1, 1);
-        callback(room.State(room.p1));
+        callback();
         socket.on("disconnect", () => {
         delete this.games[room.room_id];
         room.EndGame(-1);
@@ -98,7 +98,7 @@ exports.GameManager = class GameManager{
 
         room.p2 = {socket: socket, emoji: room.p2.emoji, name: name};
         room.RegisterUser(room.p2, 2);
-        callback(room.State(room.p2));
+        callback();
         socket.on("disconnect", () => {
         delete this.games[room.room_id];
         room.EndGame(-1);
