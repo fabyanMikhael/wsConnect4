@@ -32,6 +32,11 @@ class Game{
                 }
             }
         });
+        player.socket.on(WS_Server.Rematch, () => {
+            if(!this.over) return;
+            if(this.p1.socket == null || this.p2.socket == null) return;
+            this.ResetGame(this.p2, this.p1);
+        });
     }
 
     EmitState(){
@@ -67,6 +72,20 @@ class Game{
             state: state
            };
     }
+
+    ResetGame(p1,p2){
+        this.p1 = p1;
+        this.p2 = p2;
+        this.board = [];
+        for (let i = 0; i < 6; i++){
+            this.board.push([0, 0, 0, 0, 0, 0, 0])
+        };
+        this.turn = this.turn;
+        this.over = false;
+        this.winner = -1;
+        this.EmitState();
+    }
+    
 
     EndGame(winner){
         this.over = true;
@@ -105,11 +124,11 @@ class Game{
 
         let offsets = [[-3,-3], [-2,-2], [-1,-1], [0,0], [1,1], [2,2], [3,3]];
         let offsets_2 = [[0,0], [1,1], [2,2], [3,3], [4,4]];
-        for (const {a,b} of offsets){
+        for (const [a,b] of offsets){
             let x = row + a;
             let y = column + b;
             let sum = 0;
-            for (const {i,j} of offsets_2){
+            for (const [i,j] of offsets_2){
                 let cell = this.GetCell(x+i, y+j);
                 if (cell == 0 || cell != player_index) break;
                 sum += 1;
@@ -121,13 +140,13 @@ class Game{
         }
 
 
-        let offsets = [[3,-3], [2,-2], [1,-1], [0,0], [-1,1], [-2,2], [-3,3]];
-        let offsets_2 = [[0,0], [-1,1], [-2,2], [-3,3], [-4,4]];
-        for (const {a,b} of offsets){
+        offsets = [[3,-3], [2,-2], [1,-1], [0,0], [-1,1], [-2,2], [-3,3]];
+        offsets_2 = [[0,0], [-1,1], [-2,2], [-3,3], [-4,4]];
+        for (const [a,b] of offsets){
             let x = row + a;
             let y = column + b;
             let sum = 0;
-            for (const {i,j} of offsets_2){
+            for (const [i,j] of offsets_2){
                 let cell = this.GetCell(x+i, y+j);
                 if (cell == 0 || cell != player_index) break;
                 sum += 1;
@@ -145,6 +164,7 @@ class Game{
     GetCell(row,column){
         if (row < 0 || row > 5) return 0;
         if (column < 0 || column > 6) return 0;
+        console.log(this.board, row, column);
         return this.board[row][column];
     }
 
@@ -174,7 +194,7 @@ exports.GameManager = class GameManager{
 
         let disconnect = () => {
             delete this.games[room.room_id];
-            room.p1.socket = null
+            room.p1.socket = null;
             room.EndGame(-2);
         };
 

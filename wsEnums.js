@@ -6,6 +6,7 @@ exports.WS_Server = {
     //when in a game...
     TryMove: "TryMove", // (int column)
     LeaveRoom: "LeaveRoom", // ()
+    Rematch: "Rematch", // ()
 }
 
 exports.WS_Client = {
