@@ -18,13 +18,13 @@ class Game{
     RegisterUser(player){
         player.socket.on(WS_Server.TryMove, column => {
             if (!(column >= 0 && column <= 6)) return;
-            this.board.forEach(row => {
+            for (const row of this.board){
                 if (row[column] == 0){
                     row[column] = player.emoji;
                     this.EmitState();
                     return;
                 }
-            });
+            }
         });
     }
 
