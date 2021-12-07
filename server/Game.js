@@ -49,6 +49,9 @@ class Game{
             if(this.winner == -1){
                 state = "tie";
             }
+            else if (this.winner == -2){
+                state = "forfeit";
+            }
             else{
                 state = this.winner == player_index ? "won" : "lost";
             }
@@ -78,6 +81,10 @@ class Game{
         
     }
 
+    GetCell(row,column){
+        
+    }
+
 }
 
 exports.GameManager = class GameManager{
@@ -104,7 +111,7 @@ exports.GameManager = class GameManager{
         let disconnect = () => {
             delete this.games[room.room_id];
             room.p1.socket = null
-            room.EndGame(-1);
+            room.EndGame(-2);
         };
 
         socket.on("disconnect", disconnect);
@@ -133,7 +140,7 @@ exports.GameManager = class GameManager{
         let disconnect = () => {
             delete this.games[room.room_id];
             room.p2.socket = null;
-            room.EndGame(-1);
+            room.EndGame(-2);
         };
         
         socket.on("disconnect", disconnect);
