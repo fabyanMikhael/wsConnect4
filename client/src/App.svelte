@@ -1,14 +1,22 @@
 <!-- script -->
-<script >
-	import { io } from "socket.io-client";
-
-    const Socket = io("http://127.0.0.1:8080");
-	Socket.on("connect", () => alert("connected!"));
-
+<script>
+  import Board from "./Board.svelte";
+  import Info from "./Info.svelte";
+  import { started } from "./stores";
 </script>
 
 <!-- html -->
-<h1>Hello there.</h1>
+<body>
+  {#if !$started}
+    <Info />
+  {:else}
+    <Board />
+  {/if}
+</body>
 
 <!-- styling -->
-<style></style>
+<style>
+  body {
+    overflow: hidden;
+  }
+</style>
