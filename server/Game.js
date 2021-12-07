@@ -35,12 +35,13 @@ class Game{
         player.socket.on(WS_Server.Rematch, () => {
             if(!this.over) return;
             if(this.p1.socket == null || this.p2.socket == null) return;
+            this.p2.emoji = 1;
+            this.p1.emoji = 2;
             this.ResetGame(this.p2, this.p1);
         });
     }
 
     EmitState(){
-        console.log(this);
         if(this.p1.socket !== null)
             this.p1.socket.emit(WS_Client.GameState, this.State(this.p1));
         if(this.p2.socket !== null)
@@ -164,7 +165,6 @@ class Game{
     GetCell(row,column){
         if (row < 0 || row > 5) return 0;
         if (column < 0 || column > 6) return 0;
-        console.log(this.board, row, column);
         return this.board[row][column];
     }
 
