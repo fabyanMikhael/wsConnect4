@@ -24,12 +24,13 @@ class Game{
     }
 
     EmitState(){
+        console.log(this);
         this.p1.socket.emit(WS_Client.GameState, this.State(this.p1));
+        if(this.p2.socket == null) return;
         this.p2.socket.emit(WS_Client.GameState, this.State(this.p2));
     }
 
     State(player){
-        if (player.socket == null) return;
         let player_index = player == this.p1 ? 1 : 2;
         let other = player_index == 1 ? this.p2 : this.p1;
         let state = "ongoing";
@@ -65,11 +66,11 @@ exports.GameManager = class GameManager{
         this.games = {};
     }
     Setup(socket){
-        socket.on(WS_Server.JoinRoom,   (name, callback) => this.JoinRoom(socket, name, callback));
-        socket.on(WS_Server.CreateRoom, (room_id, name, callback) => this.CreateRoom(room_id, socket, name, callback));
+        socket.on(WS_Server.CreateRoom,   (name, callback) => this.CreateRoom(socket, name, callback));
+        socket.on(WS_Server.JoinRoom, (room_id, name, callback) => this.JoinRoom(room_id, socket, name, callback));
     }
 
-    CreateRoom(socket, name, callback){
+    CreateRoom(socket, name, callback = () => {}){
         let room = new Game(socket, name, makeid(23));
         this.games[room.room_id] = room;
 
@@ -81,10 +82,11 @@ exports.GameManager = class GameManager{
         });
     }
 
-    JoinRoom(room_id, socket, name, callback){
+    JoinRoom(room_id, socket, name, callback = () => {}){
 
         if (!room_id in this.games) return;
         let room = this.games[room_id];
+        if (room == null) return;
         if (room.p2 != null) return;
 
         room.p2 = {socket: socket, emoji: '🤓', name: name};
