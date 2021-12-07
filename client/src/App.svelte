@@ -16,6 +16,8 @@
     rel="stylesheet"
     href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
   />
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 </svelte:head>
 
 <!-- html -->

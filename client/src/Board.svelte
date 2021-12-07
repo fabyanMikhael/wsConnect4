@@ -2,11 +2,17 @@
   import { fly } from "svelte/transition";
   import { game, started, Socket } from "./stores";
   import { WS_Server } from "../../wsEnums";
+  import { onMount } from "svelte";
+
   import Cell from "./Cell.svelte";
 
   function leave() {
     $Socket.emit(WS_Server.LeaveRoom);
     started.set(false);
+  }
+
+  function rematch() {
+    $Socket.emit(WS_Server.Rematch);
   }
 
   function get_state() {
@@ -18,11 +24,15 @@
       case "waiting":
         return "Waiting For Opponent";
       default:
-        return `You ${$game.state
-          .charAt(0)
-          .toUpperCase()}${$game.state.slice()}`;
+        return `You ${$game.state.charAt(0).toUpperCase()}${$game.state.slice(
+          1
+        )}`;
     }
   }
+
+  onMount(() => {
+    new ClipboardJS(".room_id");
+  });
 </script>
 
 <!-- html -->
@@ -33,7 +43,11 @@
         <h1 class="title">Connect 4</h1>
         <div class="topper">
           <h2 class="back" on:click={leave}><i class="fas fa-arrow-left" /></h2>
-          <h2 class="id">room: <b>{$game.room_id}</b></h2>
+          <h2 class="id">
+            room: <b data-clipboard-text={$game.room_id} class="room_id"
+              >{$game.room_id}</b
+            >
+          </h2>
           <h2 class="back"><i class="fas fa-eye" /></h2>
         </div>
       </div>
@@ -41,6 +55,22 @@
         {#if $game.state !== "ongoing"}
           <div in:fly={{ y: 140, duration: 800 }} class="overlay">
             <h1>{get_state()}</h1>
+
+            <!-- {#if $game.state !== "waiting"} -->
+            <h2 class="history">
+              <div class={`circle cc e${$game.other.emoji}`} />
+              <div>
+                {$game.other.wins} <i class="fas fa-trophy gold" />
+                {$game.self.wins}
+              </div>
+              <div class={`circle cc e${$game.self.emoji}`} />
+            </h2>
+
+            <div class="actions">
+              <h2 on:click={leave}>leave</h2>
+              <h2 on:click={rematch}>rematch</h2>
+            </div>
+            <!-- {/if} -->
           </div>
         {/if}
 
@@ -103,6 +133,19 @@
 
   .back:active {
     color: rgb(81, 81, 81);
+  }
+
+  .room_id {
+    cursor: pointer;
+    transition: all 100ms;
+  }
+
+  .room_id:hover {
+    color: rgb(149, 149, 149);
+  }
+
+  .room_id:active {
+    color: rgb(69, 69, 69);
   }
 
   .id b {
@@ -169,6 +212,7 @@
   .cc {
     width: 1.5rem;
     height: 1.5rem;
+    box-shadow: none;
   }
 
   .person {
@@ -182,13 +226,49 @@
   }
 
   .overlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     position: absolute;
     z-index: 10;
     right: 25%;
-    bottom: 55%;
+    bottom: 50%;
     width: 50%;
-    background-color: rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.861);
     box-shadow: 0px 5px 10px 2px rgb(220, 220, 220);
     border-radius: 5px;
+    user-select: none;
+  }
+  .gold {
+    color: #ffc124;
+  }
+
+  .history {
+    margin: 0;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    color: rgb(105, 105, 105);
+  }
+
+  .actions {
+    margin: 0;
+    margin-bottom: 1rem;
+    gap: 2rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    color: rgb(105, 105, 105);
+  }
+
+  .actions h2 {
+    margin: 0;
+    font-size: 1.2rem;
   }
 </style>
