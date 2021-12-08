@@ -236,13 +236,22 @@
     text-align: center;
     position: absolute;
     z-index: 10;
-    right: 25%;
-    bottom: 50%;
-    width: 50%;
+    margin-left: -0.5rem;
+    margin-top: 2.5rem;
+    padding: 1rem;
+
+    width: 334.61px;
+    max-width: 334.61px;
+
+    /* bottom: 50%; */
     background-color: rgba(255, 255, 255, 0.861);
     box-shadow: 0px 5px 10px 2px rgb(220, 220, 220);
     border-radius: 5px;
     user-select: none;
+  }
+
+  .overlay h1 {
+    font-size: 1.5rem;
   }
   .gold {
     color: #ffc124;
