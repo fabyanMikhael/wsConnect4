@@ -4,13 +4,9 @@ FROM node:16
 WORKDIR /app
 
 COPY ./client ./client
-COPY wsEnums.js .
-RUN cd ./client
-RUN npm i
-RUN npm run build
-
-RUN cd ..
-COPY ./client/public ./public
+COPY wsEnums.js ./wsEnums.js
+RUN cd ./client && npm i && npm run build 
+RUN cp -R ./client/public ./public
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
