@@ -13,10 +13,20 @@ class Game{
         this.winner = -1;
         this.moves = 0;
         this.spectators = [];
+        this.WinningCells = [];
         for (let i = 0; i < 6; i++){
             this.board.push([0, 0, 0, 0, 0, 0, 0])
         }
         this.EmitState();
+    }
+
+    SendMessage(name, message){
+        if (message == null || message.length == 0 || message.length > 100) return;
+        if(this.p1.socket !== null)
+            this.p1.socket.emit(WS_Client.Message, name, message);
+        if(this.p2.socket !== null)
+            this.p2.socket.emit(WS_Client.Message, name, message);
+        this.spectators.forEach(socket => socket.emit(WS_Client.Message, name, message));
     }
 
     RegisterUser(player){
@@ -42,6 +52,7 @@ class Game{
             this.p1.emoji = 2;
             this.ResetGame(this.p2, this.p1);
         });
+        player.socket.on(WS_Server.SendMessage, msg => {this.SendMessage(player.name, msg)});
     }
 
     EmitState(){
@@ -80,7 +91,8 @@ class Game{
             room_id: this.room_id,
             state: state,
             spectators: this.spectators.length,
-            spectator: isSpectator
+            spectator: isSpectator,
+            WinningCells: this.WinningCells
            };
     }
 
@@ -115,25 +127,31 @@ class Game{
         let player_index = player == this.p1 ? 1 : 2;
         for (let x = 0; x < 7; x++){
             let sum = 0;
+            let cells = [];
             for (let i = 0; i < 4; i++){
-                let cell = this.GetCell(row, x+i)
+                let cell = this.GetCell(row, x+i);
                 if (cell != player_index) break;
+                cells.push([row, x+i]);
                 sum += 1;
             }
             if (sum == 4){
                 this.EndGame(player_index);
+                this.WinningCells = cells;
                 return true;
             }
         }
         for (let x = 0; x < 6; x++){
             let sum = 0;
+            let cells = [];
             for (let i = 0; i < 4; i++){
                 let cell = this.GetCell(x+i, column);
                 if (cell == 0 || cell != player_index) break;
+                cells.push([x+i, column]);
                 sum += 1;
             }
             if (sum == 4){
                 this.EndGame(player_index);
+                this.WinningCells = cells;
                 return true;
             }
         } 
@@ -144,13 +162,16 @@ class Game{
             let x = row + a;
             let y = column + b;
             let sum = 0;
+            let cells = [];
             for (const [i,j] of offsets_2){
                 let cell = this.GetCell(x+i, y+j);
                 if (cell == 0 || cell != player_index) break;
+                cells.push([x+i, y+j]);
                 sum += 1;
             }
             if (sum == 4){
                 this.EndGame(player_index);
+                this.WinningCells = cells;
                 return true;
             }
         }
@@ -162,13 +183,16 @@ class Game{
             let x = row + a;
             let y = column + b;
             let sum = 0;
+            let cells = [];
             for (const [i,j] of offsets_2){
                 let cell = this.GetCell(x+i, y+j);
                 if (cell == 0 || cell != player_index) break;
+                cells.push([x+i, y+j]);
                 sum += 1;
             }
             if (sum == 4){
                 this.EndGame(player_index);
+                this.WinningCells = cells;
                 return true;
             }
         }
@@ -227,7 +251,7 @@ exports.GameManager = class GameManager{
         
 
         if (room.p2.socket != null){
-            this.RegisterSpectator(room, socket, callback);
+            this.RegisterSpectator(room, socket, name, callback);
             return;
         }
 
@@ -248,7 +272,7 @@ exports.GameManager = class GameManager{
         room.EmitState();
     }
 
-    RegisterSpectator(room, socket, callback){
+    RegisterSpectator(room, socket, name, callback){
         callback();
         room.spectators.push(socket);
         let disconnect = () => {
@@ -257,6 +281,7 @@ exports.GameManager = class GameManager{
         };
         socket.on("disconnect", disconnect);
         socket.on(WS_Server.LeaveRoom, disconnect);
+        socket.on(WS_Server.SendMessage, msg => room.SendMessage(name, msg))
         room.EmitState();
 
     }

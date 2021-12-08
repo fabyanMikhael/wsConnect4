@@ -7,11 +7,13 @@ exports.WS_Server = {
     TryMove: "TryMove", // (int column)
     LeaveRoom: "LeaveRoom", // ()
     Rematch: "Rematch", // ()
+    SendMessage: "SendMessage", // (string message)
 }
 
 exports.WS_Client = {
     //when in a game
     GameState: "GameState", // (GameState state)
+    Message: "Message", // (string username, string text)
 
     //info
     PlayerCount: "PlayerCount" // (int count)
