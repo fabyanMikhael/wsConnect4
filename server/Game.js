@@ -135,8 +135,8 @@ class Game{
                 sum += 1;
             }
             if (sum == 4){
-                this.EndGame(player_index);
                 this.WinningCells = cells;
+                this.EndGame(player_index);
                 return true;
             }
         }
@@ -150,8 +150,8 @@ class Game{
                 sum += 1;
             }
             if (sum == 4){
-                this.EndGame(player_index);
                 this.WinningCells = cells;
+                this.EndGame(player_index);
                 return true;
             }
         } 
@@ -170,8 +170,8 @@ class Game{
                 sum += 1;
             }
             if (sum == 4){
-                this.EndGame(player_index);
                 this.WinningCells = cells;
+                this.EndGame(player_index);
                 return true;
             }
         }
@@ -191,8 +191,8 @@ class Game{
                 sum += 1;
             }
             if (sum == 4){
-                this.EndGame(player_index);
                 this.WinningCells = cells;
+                this.EndGame(player_index);
                 return true;
             }
         }
@@ -228,7 +228,7 @@ exports.GameManager = class GameManager{
         this.games[room.room_id] = room;
 
         room.RegisterUser(room.p1);
-        callback();
+        callback(room.State(room.p1));
 
         let player = room.p1;
         let disconnect = () => {
@@ -258,7 +258,7 @@ exports.GameManager = class GameManager{
         room.p2.socket = socket;
         room.p2.name = name;
         room.RegisterUser(room.p2);
-        callback();
+        callback(room.State(room.p2));
 
         let player = room.p2;
         let disconnect = () => {
@@ -273,7 +273,6 @@ exports.GameManager = class GameManager{
     }
 
     RegisterSpectator(room, socket, name, callback){
-        callback();
         room.spectators.push(socket);
         let disconnect = () => {
             room.spectators.splice(room.spectators.indexOf(socket), 1);
@@ -281,7 +280,8 @@ exports.GameManager = class GameManager{
         };
         socket.on("disconnect", disconnect);
         socket.on(WS_Server.LeaveRoom, disconnect);
-        socket.on(WS_Server.SendMessage, msg => room.SendMessage(name, msg))
+        socket.on(WS_Server.SendMessage, msg => room.SendMessage(name, msg));
+        callback(room.State(room.p1, true));
         room.EmitState();
 
     }
