@@ -1,7 +1,7 @@
 <script>
   import { fly } from "svelte/transition";
-  import { Socket } from "./stores";
-  import { WS_Server, WS_Client } from "../../wsEnums";
+  import { Socket, player_count } from "./stores";
+  import { WS_Server } from "../../wsEnums";
 
   let name, room;
   $: create_room = !(room && room.length > 0);
@@ -15,9 +15,6 @@
       }
     }
   }
-
-  let player_count = 0;
-  $Socket.on(WS_Client.PlayerCount, (count) => (player_count = count));
 </script>
 
 <!-- html -->
@@ -42,7 +39,7 @@
       </div>
       <h2 class="footer">
         <i class="fas fa-user" />
-        {player_count} active player{player_count == 1 ? "" : "s"}
+        {$player_count} active player{$player_count == 1 ? "" : "s"}
       </h2>
     </div>
   </div>

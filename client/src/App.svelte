@@ -2,9 +2,10 @@
 <script>
   import Board from "./Board.svelte";
   import Info from "./Info.svelte";
-  import { started, game, Socket } from "./stores";
+  import { started, game, player_count, Socket } from "./stores";
   import { WS_Client } from "../../wsEnums";
 
+  $Socket.on(WS_Client.PlayerCount, (count) => player_count.set(count));
   $Socket.on(WS_Client.GameState, (gs) => {
     started.set(true);
     game.set(gs);
