@@ -20,7 +20,7 @@
   style={`cursor: ${emoji == 0 ? "pointer" : "default"}`}
 >
   {#if emoji}
-    <div in:fly={{ y: -140, duration: 800 }} class={`circle e${emoji}`} />
+    <div in:fly={{ y: -140, duration: 400 }} class={`circle e${emoji}`} />
   {/if}
 </div>
 

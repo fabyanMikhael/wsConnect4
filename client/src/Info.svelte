@@ -22,13 +22,28 @@
     successful = false;
     if (name) {
       if (create_room) {
-        $Socket.emit(WS_Server.CreateRoom, name);
+        $Socket.emit(WS_Server.CreateRoom, name, (gs) => {
+          room = gs.room_id;
+          add_room();
+        });
       } else {
         $Socket.emit(WS_Server.JoinRoom, room, name, () => {
+          add_room();
           successful = true;
         });
       }
     }
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  function add_room() {
+    const new_url = `${window.location.protocol}//${window.location.host}?r=${room}`;
+    window.history.replaceState({ path: new_url }, document.title, new_url);
+  }
+
+  function remove_room() {
+    room = null;
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
 </script>
 
@@ -51,9 +66,13 @@
               successful = true;
             }}
             maxlength="5"
+            size="14"
             placeholder="room..."
             bind:value={room}
           />
+          <button class="btn smol" on:click={remove_room} disabled={!room}
+            ><i class="fas fa-trash" /></button
+          >
         </div>
 
         <button class="btn" on:click={start} disabled={!valid_name}
@@ -120,6 +139,7 @@
   }
 
   .btn {
+    /* width: 100%; */
     width: 100%;
     user-select: none;
     border-radius: 5px;
@@ -128,5 +148,14 @@
     transition: all 100ms;
     outline: none;
     border: none;
+    cursor: pointer;
+  }
+
+  .smol {
+    width: 23%;
+  }
+  .fa-trash {
+    cursor: pointer;
+    pointer-events: none;
   }
 </style>

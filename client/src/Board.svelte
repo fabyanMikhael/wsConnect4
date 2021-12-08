@@ -8,6 +8,7 @@
 
   function leave() {
     $Socket.emit(WS_Server.LeaveRoom);
+    window.history.replaceState({}, document.title, window.location.pathname);
     started.set(false);
   }
 
@@ -50,7 +51,7 @@
               you are spectating
             {:else}
               room: <b
-                data-clipboard-text={`https://${window.location.host}?r=${$game.room_id}`}
+                data-clipboard-text={`${window.location.protocol}//${window.location.host}?r=${$game.room_id}`}
                 class="room_id">{$game.room_id}</b
               >
             {/if}
@@ -85,9 +86,14 @@
           </div>
         {/if}
 
-        {#each $game.board as row}
-          {#each row as emoji, column}
-            <Cell {emoji} {column} />
+        {#each $game.board as r, row}
+          {#each r as emoji, column}
+            <Cell
+              {emoji}
+              {column}
+              highlight={$game.WinningCells &&
+                [row, column] in $game.WinningCells}
+            />
           {/each}
         {/each}
       </div>

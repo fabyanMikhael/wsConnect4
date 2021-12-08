@@ -7,6 +7,7 @@
 
   $Socket.on(WS_Client.PlayerCount, (count) => player_count.set(count));
   $Socket.on(WS_Client.GameState, (gs) => {
+    // console.log(gs);
     game.set(gs);
     started.set(true);
   });
