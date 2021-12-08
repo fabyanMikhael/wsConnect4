@@ -1,7 +1,7 @@
 <script>
   import { fly } from "svelte/transition";
   import { Socket } from "./stores";
-  import { WS_Server } from "../../wsEnums";
+  import { WS_Server } from "../../server/wsEnums";
 
   export let emoji;
   export let highlight;

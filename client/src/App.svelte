@@ -3,7 +3,7 @@
   import Board from "./Board.svelte";
   import Info from "./Info.svelte";
   import { started, game, Socket } from "./stores";
-  import { WS_Client } from "../../wsEnums";
+  import { WS_Client } from "../../server/wsEnums";
 
   $Socket.on(WS_Client.GameState, (gs) => {
     started.set(true);
