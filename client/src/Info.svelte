@@ -4,14 +4,29 @@
   import { WS_Server } from "../../wsEnums";
 
   let name, room;
+  const urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.has("r")) {
+    const r = urlParams.get("r");
+    if (r.length <= 5) {
+      room = r;
+    }
+  }
+
+  let successful = true;
+
   $: create_room = !(room && room.length > 0);
+  $: valid_name = name && name.length > 0 && successful;
 
   function start() {
+    successful = false;
     if (name) {
       if (create_room) {
         $Socket.emit(WS_Server.CreateRoom, name);
       } else {
-        $Socket.emit(WS_Server.JoinRoom, room, name);
+        $Socket.emit(WS_Server.JoinRoom, room, name, () => {
+          successful = true;
+        });
       }
     }
   }
@@ -30,10 +45,18 @@
         </div>
 
         <div class="sec">
-          <input maxlength="5" placeholder="room..." bind:value={room} />
+          <input
+            class={successful ? "" : "fail"}
+            on:input={() => {
+              successful = true;
+            }}
+            maxlength="5"
+            placeholder="room..."
+            bind:value={room}
+          />
         </div>
 
-        <button class="btn" on:click={start}
+        <button class="btn" on:click={start} disabled={!valid_name}
           >{create_room ? "Create" : "Join"} Room</button
         >
       </div>
@@ -50,6 +73,10 @@
   .title {
     margin-bottom: 0.3rem;
     user-select: none;
+  }
+
+  .fail {
+    color: rgb(178, 0, 0);
   }
 
   .outter {

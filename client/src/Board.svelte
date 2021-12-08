@@ -23,10 +23,12 @@
         return "Opponent Left The Match";
       case "waiting":
         return "Waiting For Opponent";
+      case "won":
+        return "You Won";
+      case "lost":
+        return "You Lost";
       default:
-        return `You ${$game.state.charAt(0).toUpperCase()}${$game.state.slice(
-          1
-        )}`;
+        return `${$game.state} Won`;
     }
   }
 
@@ -44,11 +46,12 @@
         <div class="topper">
           <h2 class="back" on:click={leave}><i class="fas fa-arrow-left" /></h2>
           <h2 class="id">
-            room: <b data-clipboard-text={$game.room_id} class="room_id"
-              >{$game.room_id}</b
+            room: <b
+              data-clipboard-text={`${window.location.host}?r=${$game.room_id}`}
+              class="room_id">{$game.room_id}</b
             >
           </h2>
-          <h2 class="back"><i class="fas fa-eye" /></h2>
+          <h2 class="back">{$game.spectators} <i class="fas fa-eye" /></h2>
         </div>
       </div>
       <div class="board">
@@ -66,12 +69,14 @@
                 <div class={`circle cc e${$game.self.emoji}`} />
               </h2>
 
-              <div class="actions">
-                <h2 on:click={leave}>leave</h2>
-                {#if $game.state !== "forfeit"}
-                  <h2 on:click={rematch}>rematch</h2>
-                {/if}
-              </div>
+              {#if !$game.spectator}
+                <div class="actions">
+                  <h2 on:click={leave}>leave</h2>
+                  {#if $game.state !== "forfeit"}
+                    <h2 on:click={rematch}>rematch</h2>
+                  {/if}
+                </div>
+              {/if}
             {/if}
           </div>
         {/if}
@@ -100,7 +105,9 @@
             <div class={`circle cc e${$game.self.emoji}`} />
           </div>
           {#if $game.turn}
-            <h2 in:fly={{ y: 50, duration: 800 }}>Your Turn</h2>
+            <h2 in:fly={{ y: 50, duration: 800 }}>
+              {$game.spectator ? "Opponents" : "Your"} Turn
+            </h2>
           {:else}
             <h2>&nbsp;</h2>
           {/if}
@@ -271,7 +278,6 @@
   .actions {
     margin: 0;
     margin-bottom: 1rem;
-    gap: 2rem;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -280,7 +286,7 @@
   }
 
   .actions h2 {
-    margin: 0;
+    margin: 0 1rem;
     font-size: 1.2rem;
     cursor: pointer;
   }
