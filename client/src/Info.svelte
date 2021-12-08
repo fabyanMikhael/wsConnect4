@@ -1,7 +1,7 @@
 <script>
   import { fly } from "svelte/transition";
   import { Socket } from "./stores";
-  import { WS_Server, WS_Client } from "../../wsEnums";
+  import { WS_Server, WS_Client } from "../../server/wsEnums";
 
   let name, room;
   $: create_room = !(room && room.length > 0);
