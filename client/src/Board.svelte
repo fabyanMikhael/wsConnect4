@@ -46,10 +46,14 @@
         <div class="topper">
           <h2 class="back" on:click={leave}><i class="fas fa-arrow-left" /></h2>
           <h2 class="id">
-            room: <b
-              data-clipboard-text={`${window.location.host}?r=${$game.room_id}`}
-              class="room_id">{$game.room_id}</b
-            >
+            {#if $game.spectator}
+              you are spectating
+            {:else}
+              room: <b
+                data-clipboard-text={`https://${window.location.host}?r=${$game.room_id}`}
+                class="room_id">{$game.room_id}</b
+              >
+            {/if}
           </h2>
           <h2 class="back">{$game.spectators} <i class="fas fa-eye" /></h2>
         </div>
