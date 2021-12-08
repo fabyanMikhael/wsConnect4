@@ -1,17 +1,18 @@
-const { WS_Client, WinCondition, WS_Server } =  require("./wsEnums");
+const { WS_Client, WS_Server } =  require("./wsEnums");
 const NAME_LENGTH = 10;
 const ROOM_ID_LENGTH = 5;
 
 class Game{
     constructor(player1, name1, room_id){
-        this.p1 = {socket: player1, emoji: 1, name: name1};
-        this.p2 = {socket: null, emoji: 2, name: null};
+        this.p1 = {socket: player1, emoji: 1, name: name1, wins: 0};
+        this.p2 = {socket: null, emoji: 2, name: null, wins: 0};
         this.board = [];
         this.room_id = room_id;
         this.turn = this.p2;
         this.over = false;
         this.winner = -1;
         this.moves = 0;
+        this.spectators = [];
         for (let i = 0; i < 6; i++){
             this.board.push([0, 0, 0, 0, 0, 0, 0])
         }
@@ -48,9 +49,14 @@ class Game{
             this.p1.socket.emit(WS_Client.GameState, this.State(this.p1));
         if(this.p2.socket !== null)
             this.p2.socket.emit(WS_Client.GameState, this.State(this.p2));
+        let spectator_state = this.State(this.p1, true);
+        if (spectator_state.state == "won" || spectator_state == "lost"){
+            spectator_state.state = spectator_state.state == "won" ? this.p1.name : this.p2.name;
+        }
+        this.spectators.forEach(socket => socket.emit(WS_Client.GameState, spectator_state));
     }
 
-    State(player){
+    State(player, isSpectator=false){
         let player_index = player == this.p1 ? 1 : 2;
         let other = player_index == 1 ? this.p2 : this.p1;
         let state = "ongoing";
@@ -67,12 +73,14 @@ class Game{
         }
         else if (this.p2.socket == null) state = "waiting";
         return {
-            self:  {name: player.name, emoji: player.emoji, wins: player.socket.wins},
-            other: {name: other.name, emoji: other.emoji, wins: (other.socket == null ? 0 : other.socket.wins) },
+            self:  {name: player.name, emoji: player.emoji, wins: player.wins},
+            other: {name: other.name, emoji: other.emoji, wins: other.wins},
             board: this.board,
             turn: player == this.turn,
             room_id: this.room_id,
-            state: state
+            state: state,
+            spectators: this.spectators.length,
+            spectator: isSpectator
            };
     }
 
@@ -94,8 +102,8 @@ class Game{
     EndGame(winner){
         this.over = true;
         this.winner = winner;
-        if(winner == 1) this.p1.socket.wins += 1;
-        if(winner == 2) this.p2.socket.wins += 1;
+        if(winner == 1) this.p1.wins += 1;
+        if(winner == 2) this.p2.wins += 1;
         this.EmitState();
     }
 
@@ -182,7 +190,6 @@ exports.GameManager = class GameManager{
         this.games = {};
     }
     Setup(socket){
-        socket.wins = 0;
         socket.on(WS_Server.CreateRoom, (name, callback) => this.CreateRoom(socket, name, callback));
         socket.on(WS_Server.JoinRoom, (room_id, name, callback) => this.JoinRoom(room_id, socket, name, callback));
     }
@@ -213,16 +220,16 @@ exports.GameManager = class GameManager{
 
     JoinRoom(room_id, socket, name, callback = () => {}){
         if (name.length > NAME_LENGTH) return;
-        if (!room_id in this.games)
-            return;
-
+        
         let room = this.games[room_id];
 
-        if (room == null) 
-            return;
+        if (room == null) return;
+        
 
-        if (room.p2.socket != null)
+        if (room.p2.socket != null){
+            this.RegisterSpectator(room, socket, callback);
             return;
+        }
 
         room.p2.socket = socket;
         room.p2.name = name;
@@ -239,6 +246,19 @@ exports.GameManager = class GameManager{
         socket.on("disconnect", disconnect);
         socket.on(WS_Server.LeaveRoom, disconnect);
         room.EmitState();
+    }
+
+    RegisterSpectator(room, socket, callback){
+        callback();
+        room.spectators.push(socket);
+        let disconnect = () => {
+            room.spectators.splice(room.spectators.indexOf(socket), 1);
+            room.EmitState();
+        };
+        socket.on("disconnect", disconnect);
+        socket.on(WS_Server.LeaveRoom, disconnect);
+        room.EmitState();
+
     }
 }
 
