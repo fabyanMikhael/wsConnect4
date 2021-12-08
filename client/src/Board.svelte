@@ -1,7 +1,7 @@
 <script>
   import { fly } from "svelte/transition";
   import { game, started, Socket } from "./stores";
-  import { WS_Server } from "../../server/wsEnums";
+  import { WS_Server } from "../../wsEnums";
   import { onMount } from "svelte";
 
   import Cell from "./Cell.svelte";
