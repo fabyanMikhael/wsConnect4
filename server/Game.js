@@ -1,4 +1,4 @@
-const { WS_Client, WinCondition, WS_Server } =  require("../wsEnums");
+const { WS_Client, WinCondition, WS_Server } =  require("./wsEnums");
 const NAME_LENGTH = 10;
 const ROOM_ID_LENGTH = 5;
 

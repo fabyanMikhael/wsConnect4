@@ -14,10 +14,12 @@ const cors = require("cors");
 
 app.use(cors());
 
+app.use(express.static(__dirname + '/public'));
+
 
 ///Game stuff////////////////////////////////////////
 const { GameManager } = require("./Game");
-const { WS_Client } = require('../wsEnums');
+const { WS_Client } = require('./wsEnums');
 let GM = new GameManager();
 let PlayerCount = 0;
 io.on('connection', (socket) => {
@@ -31,6 +33,6 @@ io.on('connection', (socket) => {
 ///////////////////////////////////////////////////
 
 
-server.listen(8080, '127.0.0.1', () => {
-  console.log('listening on *:8080');
+server.listen(80, '0.0.0.0', () => {
+  console.log('listening on *:80');
 });
