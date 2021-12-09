@@ -60,19 +60,24 @@
         </div>
 
         <div class="sec">
-          <input
-            class={successful ? "" : "fail"}
-            on:input={() => {
-              successful = true;
-            }}
-            maxlength="5"
-            size="14"
-            placeholder="room..."
-            bind:value={room}
-          />
-          <button class="btn smol" on:click={remove_room} disabled={!room}
-            ><i class="fas fa-trash" /></button
-          >
+          <div class="lower">
+            <input
+              class={successful ? "" : "fail"}
+              on:input={() => {
+                successful = true;
+              }}
+              maxlength="5"
+              size="14"
+              placeholder="room..."
+              bind:value={room}
+            />
+            <button
+              class="btn smol"
+              on:click={remove_room}
+              disabled={!room}
+              style="margin-left: 5px"><i class="fas fa-trash" /></button
+            >
+          </div>
         </div>
 
         <button class="btn" on:click={start} disabled={!valid_name}
@@ -157,5 +162,11 @@
   .fa-trash {
     cursor: pointer;
     pointer-events: none;
+  }
+
+  .lower {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
   }
 </style>
